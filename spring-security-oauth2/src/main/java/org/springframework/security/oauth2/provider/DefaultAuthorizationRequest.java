@@ -244,24 +244,21 @@ public class DefaultAuthorizationRequest implements AuthorizationRequest, Serial
 		return true;
 	}
 
-	public void setClientId() {
-		// TODO Auto-generated method stub
-		
+	public void setClientId(String clientId) {
+		this.authorizationParameters.put(CLIENT_ID, clientId);
 	}
 
+	//TODO: we might not need this method
 	public void setDenied(boolean denied) {
-		// TODO Auto-generated method stub
-		
+		this.approved = !denied;
 	}
 
 	public void setState(String state) {
-		// TODO Auto-generated method stub
-		
+		this.authorizationParameters.put(STATE, state);
 	}
 
 	public void setResponseTypes(Set<String> responseTypes) {
-		// TODO Auto-generated method stub
-		
+		this.authorizationParameters.put(RESPONSE_TYPE, OAuth2Utils.formatParameterList(responseTypes));
 	}
 
 }
