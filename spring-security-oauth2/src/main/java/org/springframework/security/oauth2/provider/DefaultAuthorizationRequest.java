@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Amanda Anganes
  */
+@SuppressWarnings("serial")
 public class DefaultAuthorizationRequest implements AuthorizationRequest, Serializable {
 
 	private Set<String> scope = new LinkedHashSet<String>();
@@ -62,7 +63,7 @@ public class DefaultAuthorizationRequest implements AuthorizationRequest, Serial
 
 	private DefaultAuthorizationRequest(Map<String, String> authorizationParameters,
 			Map<String, String> approvalParameters, String clientId, Collection<String> scope,
-			Collection<GrantedAuthority> authorities, Collection<String> resourceIds, boolean approved) {
+			Collection<? extends GrantedAuthority> authorities, Collection<String> resourceIds, boolean approved) {
 		if (authorizationParameters != null) {
 			this.authorizationParameters.putAll(authorizationParameters);
 		}
@@ -103,7 +104,7 @@ public class DefaultAuthorizationRequest implements AuthorizationRequest, Serial
 		return Collections.unmodifiableSet(resourceIds);
 	}
 
-	public Collection<GrantedAuthority> getAuthorities() {
+	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return Collections.unmodifiableSet((Set<? extends GrantedAuthority>) authorities);
 	}
 
@@ -159,6 +160,8 @@ public class DefaultAuthorizationRequest implements AuthorizationRequest, Serial
 		this.approved = approved;
 	}
 
+	//TODO: Why "? extends GrantedAuthority" instead of just GrantedAuthority? It is an interface. 
+	//Carried over "? extends" to rest of code, not sure if it is necessary.
 	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
 		this.authorities = authorities == null ? new HashSet<GrantedAuthority>() : new HashSet<GrantedAuthority>(
 				authorities);
@@ -239,6 +242,26 @@ public class DefaultAuthorizationRequest implements AuthorizationRequest, Serial
 		else if (!approvalParameters.equals(other.approvalParameters))
 			return false;
 		return true;
+	}
+
+	public void setClientId() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setDenied(boolean denied) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setState(String state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setResponseTypes(Set<String> responseTypes) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

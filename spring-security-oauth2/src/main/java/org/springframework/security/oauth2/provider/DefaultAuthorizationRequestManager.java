@@ -69,4 +69,10 @@ public class DefaultAuthorizationRequestManager implements AuthorizationRequestM
 		}
 	}
 
+	public AuthorizationRequest createFromExisting(AuthorizationRequest authorizationRequest) {
+		
+		DefaultAuthorizationRequest copy = new DefaultAuthorizationRequest(authorizationRequest);
+		return copy;
+	}
+
 }
