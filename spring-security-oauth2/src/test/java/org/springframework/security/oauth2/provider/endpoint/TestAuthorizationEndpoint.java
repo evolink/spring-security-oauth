@@ -134,7 +134,11 @@ public class TestAuthorizationEndpoint {
 	@Test
 	public void testAuthorizationCodeError() throws Exception {
 		endpoint.setUserApprovalHandler(new UserApprovalHandler() {
-			public AuthorizationRequest updateBeforeApproval(AuthorizationRequest authorizationRequest,
+			public AuthorizationRequest checkForAutomaticApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
+				return authorizationRequest;
+			}
+			
+			public AuthorizationRequest updateAfterApproval(AuthorizationRequest authorizationRequest,
 					Authentication userAuthentication) {
 				return authorizationRequest;
 			}
@@ -174,7 +178,11 @@ public class TestAuthorizationEndpoint {
 			}
 		});
 		endpoint.setUserApprovalHandler(new UserApprovalHandler() {
-			public AuthorizationRequest updateBeforeApproval(AuthorizationRequest authorizationRequest,
+			public AuthorizationRequest checkForAutomaticApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
+				return authorizationRequest;
+			}
+			
+			public AuthorizationRequest updateAfterApproval(AuthorizationRequest authorizationRequest,
 					Authentication userAuthentication) {
 				return authorizationRequest;
 			}
@@ -200,7 +208,11 @@ public class TestAuthorizationEndpoint {
 			}
 		});
 		endpoint.setUserApprovalHandler(new UserApprovalHandler() {
-			public AuthorizationRequest updateBeforeApproval(AuthorizationRequest authorizationRequest,
+			public AuthorizationRequest checkForAutomaticApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
+				return authorizationRequest;
+			}
+			
+			public AuthorizationRequest updateAfterApproval(AuthorizationRequest authorizationRequest,
 					Authentication userAuthentication) {
 				return authorizationRequest;
 			}
@@ -235,7 +247,11 @@ public class TestAuthorizationEndpoint {
 	@Test
 	public void testImplicitError() throws Exception {
 		endpoint.setUserApprovalHandler(new UserApprovalHandler() {
-			public AuthorizationRequest updateBeforeApproval(AuthorizationRequest authorizationRequest,
+			public AuthorizationRequest checkForAutomaticApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
+				return authorizationRequest;
+			}
+			
+			public AuthorizationRequest updateAfterApproval(AuthorizationRequest authorizationRequest,
 					Authentication userAuthentication) {
 				return authorizationRequest;
 			}
