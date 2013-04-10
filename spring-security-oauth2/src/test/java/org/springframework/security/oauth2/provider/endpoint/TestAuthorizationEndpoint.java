@@ -38,7 +38,6 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.BaseClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.TokenGranter;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
@@ -65,7 +64,7 @@ public class TestAuthorizationEndpoint {
 
 	private BaseClientDetails client;
 
-	private DefaultAuthorizationRequest getAuthorizationRequest(String clientId, String redirectUri, String state,
+	private AuthorizationRequest getAuthorizationRequest(String clientId, String redirectUri, String state,
 			String scope) {
 		HashMap<String, String> parameters = new HashMap<String, String>();
 		parameters.put("client_id", clientId);
@@ -78,7 +77,7 @@ public class TestAuthorizationEndpoint {
 		if (scope != null) {
 			parameters.put("scope", scope);
 		}
-		return new DefaultAuthorizationRequest(parameters);
+		return new AuthorizationRequest(parameters);
 	}
 
 	@Before
@@ -279,7 +278,7 @@ public class TestAuthorizationEndpoint {
 
 	@Test
 	public void testApproveOrDeny() throws Exception {
-		DefaultAuthorizationRequest request = getAuthorizationRequest("foo", "http://anywhere.com", null, null);
+		AuthorizationRequest request = getAuthorizationRequest("foo", "http://anywhere.com", null, null);
 		request.setApproved(true);
 		model.put("authorizationRequest", request);
 		View result = endpoint.approveOrDeny(null, model, sessionStatus, principal);
@@ -309,7 +308,7 @@ public class TestAuthorizationEndpoint {
 		ModelAndView result = endpoint.authorize(model, "code", getAuthorizationRequest("foo", null, null, null)
 				.getAuthorizationParameters(), sessionStatus, principal);
 		// RedirectUri parameter should be null (SECOAUTH-333), however the resolvedRedirectUri not
-		DefaultAuthorizationRequest authorizationRequest = (DefaultAuthorizationRequest) result.getModelMap().get(
+		AuthorizationRequest authorizationRequest = (AuthorizationRequest) result.getModelMap().get(
 				"authorizationRequest");
 		assertNull(authorizationRequest.getAuthorizationParameters().get(REDIRECT_URI));
 		assertEquals("http://anywhere.com", authorizationRequest.getRedirectUri());
@@ -317,7 +316,7 @@ public class TestAuthorizationEndpoint {
 
 	@Test
 	public void testApproveOrDenyWithAuthorizationRequestWithoutRedirectUri() throws Exception {
-		DefaultAuthorizationRequest request = getAuthorizationRequest("foo", null, null, null);
+		AuthorizationRequest request = getAuthorizationRequest("foo", null, null, null);
 		request.setApproved(true);
 		model.put("authorizationRequest", request);
 		View result = endpoint.approveOrDeny(null, model, sessionStatus, principal);
@@ -328,7 +327,7 @@ public class TestAuthorizationEndpoint {
 	@Test
 	public void testAuthorizeWithNoRedirectUri() {
 		client.setRegisteredRedirectUri(Collections.<String> emptySet());
-		DefaultAuthorizationRequest request = getAuthorizationRequest("foo", null, null, null);
+		AuthorizationRequest request = getAuthorizationRequest("foo", null, null, null);
 		endpoint.setRedirectResolver(new RedirectResolver() {
 			public String resolveRedirect(String requestedRedirect, ClientDetails client) throws OAuth2Exception {
 				return null;
