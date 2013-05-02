@@ -13,7 +13,7 @@
 
 package org.springframework.security.oauth2.provider.endpoint;
 
-import static org.springframework.security.oauth2.provider.AuthorizationRequest.REDIRECT_URI;
+import static org.springframework.security.oauth2.provider.OAuthRequest.REDIRECT_URI;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -43,6 +43,8 @@ import org.springframework.security.oauth2.common.exceptions.UnsupportedResponse
 import org.springframework.security.oauth2.common.exceptions.UserDeniedAuthorizationException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientRegistrationException;
+import org.springframework.security.oauth2.provider.OAuthRequest;
+import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
@@ -137,7 +139,7 @@ public class AuthorizationEndpoint extends AbstractEndpoint implements Initializ
 
 			// The resolved redirect URI is either the redirect_uri from the parameters or the one from
 			// clientDetails. Either way we need to store it on the AuthorizationRequest.
-			String redirectUriParameter = authorizationRequest.getAuthorizationParameters().get(AuthorizationRequest.REDIRECT_URI);
+			String redirectUriParameter = authorizationRequest.getAuthorizationParameters().get(OAuthRequest.REDIRECT_URI);
 			String resolvedRedirect = redirectResolver.resolveRedirect(redirectUriParameter, getClientDetailsService()
 					.loadClientByClientId(authorizationRequest.getClientId()));
 			if (!StringUtils.hasText(resolvedRedirect)) {
@@ -182,7 +184,7 @@ public class AuthorizationEndpoint extends AbstractEndpoint implements Initializ
 
 	}
 
-	@RequestMapping(method = RequestMethod.POST, params = AuthorizationRequest.USER_OAUTH_APPROVAL)
+	@RequestMapping(method = RequestMethod.POST, params = OAuthRequest.USER_OAUTH_APPROVAL)
 	public View approveOrDeny(@RequestParam Map<String, String> approvalParameters, Map<String, ?> model,
 			SessionStatus sessionStatus, Principal principal) {
 
@@ -239,16 +241,16 @@ public class AuthorizationEndpoint extends AbstractEndpoint implements Initializ
 	}
 
 	// We can grant a token and return it with implicit approval.
-	private ModelAndView getImplicitGrantResponse(AuthorizationRequest authorizationRequest) {
+	private ModelAndView getImplicitGrantResponse(TokenRequest tokenRequest) {
 		try {
-			OAuth2AccessToken accessToken = getTokenGranter().grant("implicit", authorizationRequest);
+			OAuth2AccessToken accessToken = getTokenGranter().grant("implicit", tokenRequest);
 			if (accessToken == null) {
 				throw new UnsupportedResponseTypeException("Unsupported response type: token");
 			}
-			return new ModelAndView(new RedirectView(appendAccessToken(authorizationRequest, accessToken), false));
+			return new ModelAndView(new RedirectView(appendAccessToken(tokenRequest, accessToken), false));
 		}
 		catch (OAuth2Exception e) {
-			return new ModelAndView(new RedirectView(getUnsuccessfulRedirect(authorizationRequest, e, true), false));
+			return new ModelAndView(new RedirectView(getUnsuccessfulRedirect(tokenRequest, e, true), false));
 		}
 	}
 
@@ -262,8 +264,8 @@ public class AuthorizationEndpoint extends AbstractEndpoint implements Initializ
 		}
 	}
 
-	private String appendAccessToken(AuthorizationRequest authorizationRequest, OAuth2AccessToken accessToken) {
-		String requestedRedirect = authorizationRequest.getRedirectUri();
+	private String appendAccessToken(OAuthRequest request, OAuth2AccessToken accessToken) {
+		String requestedRedirect = request.getRedirectUri();
 		if (accessToken == null) {
 			throw new InvalidGrantException("An implicit grant could not be made");
 		}

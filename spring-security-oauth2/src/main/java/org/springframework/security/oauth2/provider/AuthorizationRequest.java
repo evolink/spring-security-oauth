@@ -1,6 +1,5 @@
 package org.springframework.security.oauth2.provider;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.common.util.OAuth2Utils;
 
 /**
  * Base class representing a request for authorization. There are convenience methods for the well-known properties
@@ -26,24 +24,11 @@ import org.springframework.security.oauth2.common.util.OAuth2Utils;
  * @author Dave Syer
  * @author Amanda Anganes
  */
-//TODO: This class may be poorly named
 //TODO: change comments on fields to javadoc-style comments
-public class AuthorizationRequest implements Serializable {
+public class AuthorizationRequest extends OAuthRequest {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 7048428826964752165L;
 
-	public static final String CLIENT_ID = "client_id";
-
-	public static final String STATE = "state";
-
-	public static final String SCOPE = "scope";
-
-	public static final String REDIRECT_URI = "redirect_uri";
-
-	public static final String RESPONSE_TYPE = "response_type";
-
-	public static final String USER_OAUTH_APPROVAL = "user_oauth_approval";
-	
 	//Represents the original, unchanged authorization parameters. Once set this should
 	//not be changed.
 	//expand, detail - for each param, explain when it is expected to be set, when it might change,
@@ -54,42 +39,16 @@ public class AuthorizationRequest implements Serializable {
 	//not be changed.
 	private Map<String, String> approvalParameters = new HashMap<String, String>();
 	
-	//Client ID. 
-	private String clientId;
-	
-	//Resolved scope. This may change as the request is processed - scopes originally
-	//requested may not all be granted.
-	private Set<String> scope = new HashSet<String>();
-
-	//The resource IDs; may change during processing.
-	private Set<String> resourceIds = new HashSet<String>();
-	
-	//The authorities that have been granted to this request. May change during
-	//processing.
-	private Collection<GrantedAuthority> authorities  = new HashSet<GrantedAuthority>();
-	
-	//Whether the request has been approved or not. This may be altered by the 
-	//user approval endpoint and/or by the user approval handler.
-	private boolean approved = false;
-	
-	//The state of the request. May change during processing.
-	private String state;
-	
 	//The resolved redirect URI. A URI may be present in the original 
 	//request, in the authorizationParameters, or it may not be provided in which 
 	//case it will be defaulted to the Client's default registered value.
 	private String resolvedRedirectUri;
 	
-	//Requested response types. 
-	private Set<String> responseTypes  = new HashSet<String>();
-	
-	private Map<String, Serializable> extensionProperties = new HashMap<String, Serializable>();
-		
 	/**
 	 * Default constructor. 
 	 */
 	public AuthorizationRequest() {
-		
+		super();
 	}
 	
 	/**
@@ -149,17 +108,6 @@ public class AuthorizationRequest implements Serializable {
 		}
 	}
 	
-	/**
-	 * Convenience method to set resourceIds and authorities on this request by
-	 * inheriting from a ClientDetails object.
-	 * 
-	 * @param clientDetails
-	 */
-	public void setResourceIdsAndAuthoritiesFromClientDetails(ClientDetails clientDetails) {
-		resourceIds.addAll(clientDetails.getResourceIds());
-		authorities.addAll(clientDetails.getAuthorities());
-	}
-	
 	public Map<String, String> getAuthorizationParameters() {
 		return authorizationParameters;
 	}
@@ -177,96 +125,12 @@ public class AuthorizationRequest implements Serializable {
 		this.approvalParameters = approvalParameters;
 	}
 
-	public String getClientId() {
-		return clientId;
-	}
-
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
-
-	public Set<String> getScope() {
-		return scope;
-	}
-
-	//TODO: remove parser and do intensive wiretesting to see if this is really needed
-	public void setScope(Set<String> scope) {
-		if (scope != null && scope.size() == 1) {
-			String value = scope.iterator().next();
-			/*
-			 * This is really an error, but it can catch out unsuspecting users and it's easy to fix. It happens when an
-			 * AuthorizationRequest gets bound accidentally from request parameters using @ModelAttribute.
-			 */
-			if (value.contains(" ") || scope.contains(",")) {
-				scope = OAuth2Utils.parseParameterList(value);
-			}
-		}
-		this.scope = scope == null ? new LinkedHashSet<String>() : new LinkedHashSet<String>(scope);
-	}
-
-	public Set<String> getResourceIds() {
-		return resourceIds;
-	}
-
-	public void setResourceIds(Set<String> resourceIds) {
-		this.resourceIds = resourceIds;
-	}
-
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return authorities;
-	}
-
-	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-		if (authorities!= null) {
-			this.authorities = new HashSet<GrantedAuthority>(authorities);
-		}
-	}
-
-	public boolean isApproved() {
-		return approved;
-	}
-
-	public void setApproved(boolean approved) {
-		this.approved = approved;
-	}
-
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
 	public String getRedirectUri() {
 		return resolvedRedirectUri;
 	}
 
 	public void setRedirectUri(String redirectUri) {
 		this.resolvedRedirectUri = redirectUri;
-	}
-
-	public Set<String> getResponseTypes() {
-		return responseTypes;
-	}
-
-	public void setResponseTypes(Set<String> responseTypes) {
-		this.responseTypes = responseTypes;
-	}
-
-
-	/**
-	 * @return the extensionProperties
-	 */
-	public Map<String, Serializable> getExtensionProperties() {
-		return extensionProperties;
-	}
-
-	/**
-	 * @param extensionProperties the extensionProperties to set
-	 */
-	public void setExtensionProperties(Map<String, Serializable> extensionProperties) {
-		this.extensionProperties = extensionProperties;
 	}
 
 	@Override

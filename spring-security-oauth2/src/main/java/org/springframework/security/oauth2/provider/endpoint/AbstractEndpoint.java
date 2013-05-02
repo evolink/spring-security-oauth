@@ -22,6 +22,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.DefaultAuthorizationRequestManager;
+import org.springframework.security.oauth2.provider.RequestManager;
 import org.springframework.security.oauth2.provider.TokenGranter;
 import org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator;
 import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
@@ -44,11 +45,16 @@ public class AbstractEndpoint implements InitializingBean {
 	private AuthorizationRequestManager authorizationRequestManager;
 
 	private AuthorizationRequestManager defaultAuthorizationRequestManager;
+	
+	private RequestManager requestManager;
 
 	public void afterPropertiesSet() throws Exception {
 		Assert.state(tokenGranter != null, "TokenGranter must be provided");
 		Assert.state(clientDetailsService != null, "ClientDetailsService must be provided");
 		defaultAuthorizationRequestManager = new DefaultAuthorizationRequestManager(getClientDetailsService());
+		if (requestManager == null) {
+			requestManager = new RequestManager(getClientDetailsService());
+		}
 		if (authorizationRequestManager == null) {
 			authorizationRequestManager = defaultAuthorizationRequestManager;
 		}
@@ -70,6 +76,10 @@ public class AbstractEndpoint implements InitializingBean {
 		return providerExceptionHandler;
 	}
 
+	protected RequestManager getRequestManager() {
+		return requestManager;
+	}
+	
 	protected AuthorizationRequestManager getAuthorizationRequestManager() {
 		return authorizationRequestManager;
 	}

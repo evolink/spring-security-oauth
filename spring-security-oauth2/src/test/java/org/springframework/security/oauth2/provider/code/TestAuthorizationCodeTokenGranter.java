@@ -36,6 +36,7 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.BaseClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.OAuthRequest;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.InMemoryTokenStore;
 import org.springframework.util.StringUtils;
@@ -63,11 +64,11 @@ public class TestAuthorizationCodeTokenGranter {
 	
 	private AuthorizationRequest createFromParameters(Map<String, String> authorizationParameters) {
 		AuthorizationRequest request = new AuthorizationRequest(authorizationParameters, Collections.<String, String> emptyMap(), 
-				authorizationParameters.get(AuthorizationRequest.CLIENT_ID), 
-				OAuth2Utils.parseParameterList(authorizationParameters.get(AuthorizationRequest.SCOPE)), null,
-				null, false, authorizationParameters.get(AuthorizationRequest.STATE), 
-				authorizationParameters.get(AuthorizationRequest.REDIRECT_URI), 
-				OAuth2Utils.parseParameterList(authorizationParameters.get(AuthorizationRequest.RESPONSE_TYPE)));
+				authorizationParameters.get(OAuthRequest.CLIENT_ID), 
+				OAuth2Utils.parseParameterList(authorizationParameters.get(OAuthRequest.SCOPE)), null,
+				null, false, authorizationParameters.get(OAuthRequest.STATE), 
+				authorizationParameters.get(OAuthRequest.REDIRECT_URI), 
+				OAuth2Utils.parseParameterList(authorizationParameters.get(OAuthRequest.RESPONSE_TYPE)));
 		return request;
 	}
 
@@ -130,7 +131,7 @@ public class TestAuthorizationCodeTokenGranter {
 		AuthorizationCodeTokenGranter granter = new AuthorizationCodeTokenGranter(providerTokenServices,
 				authorizationCodeServices, clientDetailsService);
 		OAuth2AccessToken token = granter.grant("authorization_code", authorizationRequest);
-		AuthorizationRequest finalRequest = providerTokenServices.loadAuthentication(token.getValue())
+		OAuthRequest finalRequest = providerTokenServices.loadAuthentication(token.getValue())
 				.getAuthorizationRequest();
 		assertEquals("[read]", finalRequest.getScope().toString());
 		assertEquals("[resource]", finalRequest.getResourceIds().toString());

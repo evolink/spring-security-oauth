@@ -41,6 +41,7 @@ import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.OAuthRequest;
 import org.springframework.security.oauth2.provider.TokenGranter;
 
 /**
@@ -61,11 +62,11 @@ public class TestTokenEndpoint {
 
 	private AuthorizationRequest createFromParameters(Map<String, String> authorizationParameters) {
 		AuthorizationRequest request = new AuthorizationRequest(authorizationParameters, Collections.<String, String> emptyMap(), 
-				authorizationParameters.get(AuthorizationRequest.CLIENT_ID), 
-				OAuth2Utils.parseParameterList(authorizationParameters.get(AuthorizationRequest.SCOPE)), null,
-				null, false, authorizationParameters.get(AuthorizationRequest.STATE), 
-				authorizationParameters.get(AuthorizationRequest.REDIRECT_URI), 
-				OAuth2Utils.parseParameterList(authorizationParameters.get(AuthorizationRequest.RESPONSE_TYPE)));
+				authorizationParameters.get(OAuthRequest.CLIENT_ID), 
+				OAuth2Utils.parseParameterList(authorizationParameters.get(OAuthRequest.SCOPE)), null,
+				null, false, authorizationParameters.get(OAuthRequest.STATE), 
+				authorizationParameters.get(OAuthRequest.REDIRECT_URI), 
+				OAuth2Utils.parseParameterList(authorizationParameters.get(OAuthRequest.RESPONSE_TYPE)));
 		return request;
 	}
 	

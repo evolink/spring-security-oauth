@@ -41,6 +41,7 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.BaseClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.OAuthRequest;
 import org.springframework.security.oauth2.provider.TokenGranter;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
@@ -70,25 +71,25 @@ public class TestAuthorizationEndpoint {
 	private AuthorizationRequest getAuthorizationRequest(String clientId, String redirectUri, String state,
 			String scope, Set<String> responseTypes) {
 		HashMap<String, String> parameters = new HashMap<String, String>();
-		parameters.put(AuthorizationRequest.CLIENT_ID, clientId);
+		parameters.put(OAuthRequest.CLIENT_ID, clientId);
 		if (redirectUri != null) {
-			parameters.put(AuthorizationRequest.REDIRECT_URI, redirectUri);
+			parameters.put(OAuthRequest.REDIRECT_URI, redirectUri);
 		}
 		if (state != null) {
-			parameters.put(AuthorizationRequest.STATE, state);
+			parameters.put(OAuthRequest.STATE, state);
 		}
 		if (scope != null) {
-			parameters.put(AuthorizationRequest.SCOPE, scope);
+			parameters.put(OAuthRequest.SCOPE, scope);
 		}
 		if (responseTypes != null) {
-			parameters.put(AuthorizationRequest.RESPONSE_TYPE, OAuth2Utils.formatParameterList(responseTypes));
+			parameters.put(OAuthRequest.RESPONSE_TYPE, OAuth2Utils.formatParameterList(responseTypes));
 		}
 		return new AuthorizationRequest(parameters, Collections.<String, String> emptyMap(), 
-				parameters.get(AuthorizationRequest.CLIENT_ID), 
-				OAuth2Utils.parseParameterList(parameters.get(AuthorizationRequest.SCOPE)), null,
-				null, false, parameters.get(AuthorizationRequest.STATE), 
-				parameters.get(AuthorizationRequest.REDIRECT_URI), 
-				OAuth2Utils.parseParameterList(parameters.get(AuthorizationRequest.RESPONSE_TYPE)));
+				parameters.get(OAuthRequest.CLIENT_ID), 
+				OAuth2Utils.parseParameterList(parameters.get(OAuthRequest.SCOPE)), null,
+				null, false, parameters.get(OAuthRequest.STATE), 
+				parameters.get(OAuthRequest.REDIRECT_URI), 
+				OAuth2Utils.parseParameterList(parameters.get(OAuthRequest.RESPONSE_TYPE)));
 	}
 
 	@Before
@@ -102,7 +103,7 @@ public class TestAuthorizationEndpoint {
 			}
 		});
 		endpoint.setTokenGranter(new TokenGranter() {
-			public OAuth2AccessToken grant(String grantType, AuthorizationRequest authorizationRequest) {
+			public OAuth2AccessToken grant(String grantType, OAuthRequest authorizationRequest) {
 				return null;
 			}
 		});
@@ -137,7 +138,7 @@ public class TestAuthorizationEndpoint {
 		endpoint.setAuthorizationCodeServices(new StubAuthorizationCodeServices());
 		model.put("authorizationRequest", getAuthorizationRequest("foo", "http://anywhere.com#bar", null, null, Collections.singleton("code")));
 		View result = endpoint.approveOrDeny(
-				Collections.singletonMap(AuthorizationRequest.USER_OAUTH_APPROVAL, "true"), model, sessionStatus,
+				Collections.singletonMap(OAuthRequest.USER_OAUTH_APPROVAL, "true"), model, sessionStatus,
 				principal);
 		assertEquals("http://anywhere.com?code=thecode#bar", ((RedirectView) result).getUrl());
 	}
@@ -187,7 +188,7 @@ public class TestAuthorizationEndpoint {
 	@Test
 	public void testImplicitPreApproved() throws Exception {
 		endpoint.setTokenGranter(new TokenGranter() {
-			public OAuth2AccessToken grant(String grantType, AuthorizationRequest authorizationRequest) {
+			public OAuth2AccessToken grant(String grantType, OAuthRequest authorizationRequest) {
 				return new DefaultOAuth2AccessToken("FOO");
 			}
 		});
@@ -217,7 +218,7 @@ public class TestAuthorizationEndpoint {
 	@Test(expected = InvalidScopeException.class)
 	public void testImplicitPreApprovedButInvalid() throws Exception {
 		endpoint.setTokenGranter(new TokenGranter() {
-			public OAuth2AccessToken grant(String grantType, AuthorizationRequest authorizationRequest) {
+			public OAuth2AccessToken grant(String grantType, OAuthRequest authorizationRequest) {
 				throw new IllegalStateException("Shouldn't be called");
 			}
 		});
@@ -247,7 +248,7 @@ public class TestAuthorizationEndpoint {
 	@Test
 	public void testImplicitUnapproved() throws Exception {
 		endpoint.setTokenGranter(new TokenGranter() {
-			public OAuth2AccessToken grant(String grantType, AuthorizationRequest authorizationRequest) {
+			public OAuth2AccessToken grant(String grantType, OAuthRequest authorizationRequest) {
 				return null;
 			}
 		});
@@ -275,7 +276,7 @@ public class TestAuthorizationEndpoint {
 			}
 		});
 		endpoint.setTokenGranter(new TokenGranter() {
-			public OAuth2AccessToken grant(String grantType, AuthorizationRequest authorizationRequest) {
+			public OAuth2AccessToken grant(String grantType, OAuthRequest authorizationRequest) {
 				return null;
 			}
 		});

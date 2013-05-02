@@ -27,6 +27,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.exceptions.InsufficientScopeException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuthRequest;
 
 /**
  * <p>
@@ -131,7 +132,7 @@ public class ScopeVoter implements AccessDecisionVoter<Object> {
 			}
 		}
 
-		AuthorizationRequest clientAuthentication = ((OAuth2Authentication) authentication).getAuthorizationRequest();
+		OAuthRequest clientAuthentication = ((OAuth2Authentication) authentication).getAuthorizationRequest();
 
 		for (ConfigAttribute attribute : attributes) {
 			if (this.supports(attribute)) {

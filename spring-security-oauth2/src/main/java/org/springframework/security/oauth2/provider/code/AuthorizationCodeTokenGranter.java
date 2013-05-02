@@ -27,6 +27,8 @@ import org.springframework.security.oauth2.common.exceptions.RedirectMismatchExc
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuthRequest;
+import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 
@@ -49,11 +51,11 @@ public class AuthorizationCodeTokenGranter extends AbstractTokenGranter {
 	}
 
 	@Override
-	protected OAuth2Authentication getOAuth2Authentication(AuthorizationRequest authorizationRequest) {
+	protected OAuth2Authentication getOAuth2Authentication(TokenRequest tokenRequest) {
 
-		Map<String, String> parameters = authorizationRequest.getAuthorizationParameters();
+		Map<String, String> parameters = tokenRequest.getParameters();
 		String authorizationCode = parameters.get("code");
-		String redirectUri = parameters.get(AuthorizationRequest.REDIRECT_URI);
+		String redirectUri = parameters.get(OAuthRequest.REDIRECT_URI);
 
 		if (authorizationCode == null) {
 			throw new OAuth2Exception("An authorization code must be supplied.");
@@ -68,7 +70,7 @@ public class AuthorizationCodeTokenGranter extends AbstractTokenGranter {
 		// https://jira.springsource.org/browse/SECOAUTH-333
 		// This might be null, if the authorization was done without the redirect_uri parameter
 		String redirectUriApprovalParameter = pendingAuthorizationRequest.getAuthorizationParameters().get(
-				AuthorizationRequest.REDIRECT_URI);
+				OAuthRequest.REDIRECT_URI);
 
 		if ((redirectUri != null || redirectUriApprovalParameter != null)
 				&& !pendingAuthorizationRequest.getRedirectUri().equals(redirectUri)) {
@@ -76,7 +78,7 @@ public class AuthorizationCodeTokenGranter extends AbstractTokenGranter {
 		}
 
 		String pendingClientId = pendingAuthorizationRequest.getClientId();
-		String clientId = authorizationRequest.getClientId();
+		String clientId = tokenRequest.getClientId();
 		if (clientId != null && !clientId.equals(pendingClientId)) {
 			// just a sanity check.
 			throw new InvalidClientException("Client ID mismatch");

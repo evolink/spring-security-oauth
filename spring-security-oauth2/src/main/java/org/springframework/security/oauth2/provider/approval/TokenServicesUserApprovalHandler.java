@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuthRequest;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.util.Assert;
 
@@ -36,7 +37,7 @@ public class TokenServicesUserApprovalHandler implements UserApprovalHandler, In
 
 	private static Log logger = LogFactory.getLog(TokenServicesUserApprovalHandler.class);
 
-	private String approvalParameter = AuthorizationRequest.USER_OAUTH_APPROVAL;
+	private String approvalParameter = OAuthRequest.USER_OAUTH_APPROVAL;
 	
 	/**
 	 * @param approvalParameter the approvalParameter to set

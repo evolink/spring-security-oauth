@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.OAuthRequest;
 
 /**
  * A default user approval handler that doesn't remember any decisions.
@@ -29,7 +30,7 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
  */
 public class DefaultUserApprovalHandler implements UserApprovalHandler {
 
-	private String approvalParameter = AuthorizationRequest.USER_OAUTH_APPROVAL;
+	private String approvalParameter = OAuthRequest.USER_OAUTH_APPROVAL;
 	
 	/**
 	 * @param approvalParameter the approvalParameter to set

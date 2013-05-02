@@ -54,17 +54,17 @@ public class TestAuthorizationRequest {
 	
 	private AuthorizationRequest createFromParameters(Map<String, String> authorizationParameters) {
 		AuthorizationRequest request = new AuthorizationRequest(authorizationParameters, Collections.<String, String> emptyMap(), 
-				authorizationParameters.get(AuthorizationRequest.CLIENT_ID), 
-				OAuth2Utils.parseParameterList(authorizationParameters.get(AuthorizationRequest.SCOPE)), null,
-				null, false, authorizationParameters.get(AuthorizationRequest.STATE), 
-				authorizationParameters.get(AuthorizationRequest.REDIRECT_URI), 
-				OAuth2Utils.parseParameterList(authorizationParameters.get(AuthorizationRequest.RESPONSE_TYPE)));
+				authorizationParameters.get(OAuthRequest.CLIENT_ID), 
+				OAuth2Utils.parseParameterList(authorizationParameters.get(OAuthRequest.SCOPE)), null,
+				null, false, authorizationParameters.get(OAuthRequest.STATE), 
+				authorizationParameters.get(OAuthRequest.REDIRECT_URI), 
+				OAuth2Utils.parseParameterList(authorizationParameters.get(OAuthRequest.RESPONSE_TYPE)));
 		return request;
 	}
 	
 	@Test
 	public void testApproval() throws Exception {
-		AuthorizationRequest authorizationRequest = createFromParameters(parameters);
+		OAuthRequest authorizationRequest = createFromParameters(parameters);
 		assertFalse(authorizationRequest.isApproved());
 		authorizationRequest.setApproved(true);
 		assertTrue(authorizationRequest.isApproved());
@@ -80,8 +80,8 @@ public class TestAuthorizationRequest {
 		parameters.put("scope", "read,write");
 		AuthorizationRequest authorizationRequest = createFromParameters(parameters);
 		authorizationRequest.setScope(StringUtils.commaDelimitedListToSet("foo,bar"));
-		assertFalse(authorizationRequest.getAuthorizationParameters().get(AuthorizationRequest.SCOPE).contains("bar"));
-		assertFalse(authorizationRequest.getAuthorizationParameters().get(AuthorizationRequest.SCOPE).contains("foo"));
+		assertFalse(authorizationRequest.getAuthorizationParameters().get(OAuthRequest.SCOPE).contains("bar"));
+		assertFalse(authorizationRequest.getAuthorizationParameters().get(OAuthRequest.SCOPE).contains("foo"));
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class TestAuthorizationRequest {
 		assertEquals("client", authorizationRequest.getClientId());
 		assertEquals(1, authorizationRequest.getScope().size());
 		assertTrue(authorizationRequest.getScope().contains("read"));
-		assertFalse(authorizationRequest.getAuthorizationParameters().get(AuthorizationRequest.SCOPE).contains("read"));
+		assertFalse(authorizationRequest.getAuthorizationParameters().get(OAuthRequest.SCOPE).contains("read"));
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class TestAuthorizationRequest {
 		parameters.put("scope", "bar foo");
 		AuthorizationRequest authorizationRequest = createFromParameters(parameters);
 		authorizationRequest.setScope(Collections.singleton("foo bar"));
-		assertEquals("bar foo", authorizationRequest.getAuthorizationParameters().get(AuthorizationRequest.SCOPE));
+		assertEquals("bar foo", authorizationRequest.getAuthorizationParameters().get(OAuthRequest.SCOPE));
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class TestAuthorizationRequest {
 		String sortedScopeString = OAuth2Utils.formatParameterList(sortedSet);
 
 		parameters.put("scope", scopeString);
-		AuthorizationRequest authorizationRequest = createFromParameters(parameters);
+		OAuthRequest authorizationRequest = createFromParameters(parameters);
 		authorizationRequest.setScope(sortedSet);
 				
 		// Assert that the scope parameter is still sorted
